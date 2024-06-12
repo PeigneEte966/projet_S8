@@ -1,6 +1,7 @@
 from pymongo import MongoClient
 from transformers import pipeline
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
@@ -10,12 +11,7 @@ import torch
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 # Initialiser les pipelines NLP optimisés pour le français sur le GPU
-qa_pipeline = pipeline(
-    'question-answering',
-    model='etalab-ia/camembert-base-squadFR-fquad-piaf',
-    tokenizer='etalab-ia/camembert-base-squadFR-fquad-piaf',
-    device=0 if device == 'cuda' else -1
-)
+qa = pipeline('question-answering', model='etalab-ia/camembert-base-squadFR-fquad-piaf', tokenizer='etalab-ia/camembert-base-squadFR-fquad-piaf', device=0 if device == 'cuda' else -1)
 
 # Configuration de MongoDB
 client = MongoClient('mongodb://localhost:27017/')
@@ -36,11 +32,12 @@ def find_best_context(question, contexts):
     return contexts[best_context_index]
 
 app = Flask(__name__)
-
+CORS(app)
 @app.route('/chat', methods=['POST'])
 def chat():
     try:
         user_input = request.json.get("text")
+        print(user_input)
         if not user_input:
             return jsonify({"error": "Invalid input"}), 400
 
@@ -52,12 +49,11 @@ def chat():
             'context': best_context
         }
 
-        result = qa_pipeline(input_text)
-
+        result = qa(input_text)
+        print(result['answer'])
+        print(best_context)
         response = {
-            "input": input_text,
-            "response": result if result else "Désolé, je ne peux pas répondre à cette question pour le moment.",
-            "context": best_context
+            "response": best_context if result else "Désolé, je ne peux pas répondre à cette question pour le moment.",
         }
 
         return jsonify(response)
@@ -66,4 +62,4 @@ def chat():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=5000)
