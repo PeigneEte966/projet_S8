@@ -7,6 +7,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 import torch
+from werkzeug.exceptions import BadRequest
 
 # Vérifier si le GPU est disponible et spécifier l'appareil
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -39,6 +40,11 @@ CORS(app)
 @limiter.limit('10 per minute')
 def chat():
     try:
+        # Check l'entrée pour éviter les injections SQL, script et autre attaques basée sur l'entrée
+        json_data = request.get_json()
+        if not json_data:
+            raise BadRequest('Invalid input')
+
         user_input = request.json.get("text")
         print(user_input)
         if not user_input:
