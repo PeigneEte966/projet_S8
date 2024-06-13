@@ -1,6 +1,7 @@
 from pymongo import MongoClient
 from transformers import pipeline
 from flask import Flask, request, jsonify
+from flask_limiter import Limiter
 from flask_cors import CORS
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
@@ -32,8 +33,10 @@ def find_best_context(question, contexts):
     return contexts[best_context_index]
 
 app = Flask(__name__)
+limiter = Limiter(app, key_func=lambda: request.remote_addr)
 CORS(app)
 @app.route('/chat', methods=['POST'])
+@limiter.limit('10 per minute')
 def chat():
     try:
         user_input = request.json.get("text")
