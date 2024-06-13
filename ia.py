@@ -34,6 +34,7 @@ def find_best_context(question, contexts):
     return contexts[best_context_index]
 
 app = Flask(__name__)
+#Permet d'ajouter une limite sur le nombre de requêtes faites par chaque utilisateur
 limiter = Limiter(app, key_func=lambda: request.remote_addr)
 CORS(app)
 @app.route('/chat', methods=['POST'])
