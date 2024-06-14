@@ -27,11 +27,11 @@ Ce projet comprend plusieurs scripts Python qui permettent de récupérer des do
    - Spécifier `output_file_path` pour le chemin où le fichier JSON mis à jour, contenant uniquement les résumés de contexte, doit être sauvegardé.
    - Exécuter le script pour ajouter le contexte à chaque match et sauvegarder les données dans le fichier spécifié.
 
-### Dépendances :
-- `requests`, `BeautifulSoup`, `re` pour `extraireWiki.py`
+### Dépendances
+- `requests`, `BeautifulSoup`, `re` pour *extraireWiki.py*
 - `json`, `re` pour *uefa1-fr.py*, *uefa2.py*, *worldcup.py*, *worldcup22.py*
 
-Notes :
+### Notes :
 - Assurez-vous d'avoir les bibliothèques Python nécessaires installées avant d'exécuter les scripts.
 - Plusieurs scripts Python d'extraction sont nécessaires car les données récupérées varient. Par exemple, le dataset couvrant les Coupes du Monde de 1930 à 2018 n'incluait pas celui de 2022. Il a donc fallu trouver un dataset spécifique pour la Coupe du Monde 2022, qui ne contient pas forcément les mêmes détails d'informations que le précédent.
 - Chaque script d'extraction est différent en raison de la formulation du contexte et des clés correspondantes, qui dépendent du fichier JSON récupéré et à traiter.
