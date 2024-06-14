@@ -30,7 +30,7 @@ Utilisation :
 
 Dépendances :
 - `requests`, `BeautifulSoup`, `re` pour `extraireWiki.py`
-- `json`, `re` pour 'uefa1-fr.py', 'uefa2.py', 'worldcup.py', 'worldcup22.py'
+- `json`, `re` pour `uefa1-fr.py`, `uefa2.py`, `worldcup.py`, `worldcup22.py`
 
 Notes :
 - Assurez-vous d'avoir les bibliothèques Python nécessaires installées avant d'exécuter les scripts.
