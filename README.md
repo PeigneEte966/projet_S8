@@ -38,10 +38,12 @@ Ce projet comprend plusieurs scripts Python qui permettent de récupérer des do
 - Plusieurs scripts Python d'extraction sont nécessaires car les données récupérées varient. Par exemple, le dataset couvrant les Coupes du Monde de 1930 à 2018 n'incluait pas celui de 2022. Il a donc fallu trouver un dataset spécifique pour la Coupe du Monde 2022, qui ne contient pas forcément les mêmes détails d'informations que le précédent.
 - Chaque script d'extraction est différent en raison de la formulation du contexte et des clés correspondantes, qui dépendent du fichier JSON récupéré et à traiter.
 
+<br>
 
 ## Modèle IA
 
 
+<br>
 
 ## Interface Graphique
 Les technologies utilisées pour l'interface graphique sont les suivantes : React, Vite.js et TailwindCss.
