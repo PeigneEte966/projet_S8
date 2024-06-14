@@ -36,14 +36,15 @@ CORS(app)
 limiter = Limiter(
     get_remote_address,
     app=app,
-    default_limits=["10 per minute"]
+    default_limits=["100 per minute"]
 )
 
 @app.route('/chat', methods=['POST'])
-@limiter.limit("10 per minute")
+@limiter.limit("100 per minute")
 def chat():
     try:
         json_data = request.get_json()
+        print("Requête : ", json_data)
         if not json_data:
             raise BadRequest('Invalid input')
         
@@ -73,33 +74,47 @@ def chat():
 def pouce():
     try:
         json_data = request.get_json()
+        print("Requête : ", json_data)
         if not json_data:
             raise BadRequest('Invalid input')
         
         user_input = json_data.get("pouce")
         message = user_input.get('message')
         reponse = user_input.get('reponse')
+        remove = user_input.get('active', False)
         
         if not message or not reponse:
             return jsonify({"error": "Invalid input"}), 400
 
-        pouce_collection.insert_one({
-            "message": message,
-            "reponse": reponse
-        })
-
-        response = {
-            "response": "pouce reçu",
-        }
+        if not remove:
+            result = pouce_collection.delete_one({
+                "message": message,
+                "reponse": reponse
+            })
+            if result.deleted_count == 0:
+                return jsonify({"error": "Pouce bas non trouvé"}), 404
+            response = {
+                "response": "Pouce bas retiré",
+            }
+        else:
+            pouce_collection.insert_one({
+                "message": message,
+                "reponse": reponse
+            })
+            response = {
+                "response": "Pouce bas reçu",
+            }
         return jsonify(response)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
 @app.route('/suggestion', methods=['POST'])
-@limiter.limit("10 per minute")
+# @limiter.limit("10 per minute")
 def suggestion():
     try:
         json_data = request.get_json()
+        print("Requête : ", json_data)
         if not json_data:
             raise BadRequest('Invalid input')
         
