@@ -1,10 +1,9 @@
-# Projet Informatique ICy S8
+# Projet Informatique ICy S8 - Galactik Footbot
 
+## Description
 Dans le cadre de notre projet sur la création d'un ChatBot munie d’une IA, nous avons choisi le thème du football et notamment celui des rencontres internationales masculines (Championnat d’Europe et Coupe du Monde principalement). Avec la venue de l’Euro 2024, qui se déroulera en Allemagne, un ChatBot capable d’informer les utilisateurs sur les rencontres passées et de potentiellement donner un avis sur les rencontres futures serait intéressant à développer. C’est pourquoi, nous avons pris la décision de développer un ChatBot (Galactik FootBot) capable de donner diverses informations à propos de ces 2 compétitions. Nous avons donc récupéré les datasets des résultats des matchs de 1930 à 2022 pour la Coupe du Monde et de 1960 à 2020 pour le Championnat d’Europe. 
 
-
 ## Fonction de création de contexte
-
 Ce projet comprend plusieurs scripts Python qui permettent de récupérer des données à partir de pages web, de nettoyer et de transformer ces données, puis de les sauvegarder dans un format structuré (JSON).
 
 Scripts inclus :
@@ -43,3 +42,11 @@ Notes :
 
 
 ## Interface Graphique
+Les technologies utilisées pour l'interface graphique sont les suivantes : React, Vite.js et TailwindCss.
+
+### Utilisation
+1. Lancez l'application :
+   ```bash
+   npm run dev
+   ```
+2. Ouvrez votre navigateur et accédez à `http://localhost:3000`
