@@ -6,7 +6,7 @@ Dans le cadre de notre projet sur la création d'un ChatBot munie d’une IA, no
 ## Fonction de création de contexte
 Ce projet comprend plusieurs scripts Python qui permettent de récupérer des données à partir de pages web, de nettoyer et de transformer ces données, puis de les sauvegarder dans un format structuré (JSON).
 
-### Scripts inclus dans le dossier **Create_context**:
+### Scripts inclus dans le dossier *Create_context*:
 
 1. *extraireWiki.py* :
    - Ce script récupère une page Wikipedia spécifiée par l'URL qu'on fournit, extrait les titres de section, les sous-titres et le contenu des paragraphes, puis sauvegarde les données dans un fichier JSON structuré.
