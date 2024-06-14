@@ -2,42 +2,52 @@ from pymongo import MongoClient
 from transformers import pipeline
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+from sentence_transformers import SentenceTransformer, util
+from werkzeug.exceptions import BadRequest
 import numpy as np
 import torch
 
-# Vérifier si le GPU est disponible et spécifier l'appareil
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-# Initialiser les pipelines NLP optimisés pour le français sur le GPU
-qa = pipeline('question-answering', model='etalab-ia/camembert-base-squadFR-fquad-piaf', tokenizer='etalab-ia/camembert-base-squadFR-fquad-piaf', device=0 if device == 'cuda' else -1)
+sentence_model = SentenceTransformer('sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2', device=device)
 
-# Configuration de MongoDB
 client = MongoClient('mongodb://localhost:27017/')
 db = client.projet
 faq_collection = db.euro
+pouce_collection = db.pouce
+suggestion_collection = db.suggestion
 
 def get_contexts_from_db():
     faqs = list(faq_collection.find({}))
     return [faq['contexte'] for faq in faqs]
 
 def find_best_context(question, contexts):
-    vectorizer = TfidfVectorizer().fit_transform(contexts + [question])
-    vectors = vectorizer.toarray()
-    question_vector = vectors[-1]
-    context_vectors = vectors[:-1]
-    similarities = cosine_similarity([question_vector], context_vectors).flatten()
-    best_context_index = np.argmax(similarities)
+    question_embedding = sentence_model.encode(question, convert_to_tensor=True)
+    context_embeddings = sentence_model.encode(contexts, convert_to_tensor=True)
+    similarities = util.pytorch_cos_sim(question_embedding, context_embeddings)
+    best_context_index = torch.argmax(similarities)
     return contexts[best_context_index]
 
 app = Flask(__name__)
 CORS(app)
+
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=["10 per minute"]
+)
+
 @app.route('/chat', methods=['POST'])
+@limiter.limit("10 per minute")
 def chat():
     try:
-        user_input = request.json.get("text")
-        print(user_input)
+        json_data = request.get_json()
+        if not json_data:
+            raise BadRequest('Invalid input')
+        
+        user_input = json_data.get("text")
         if not user_input:
             return jsonify({"error": "Invalid input"}), 400
 
@@ -49,15 +59,62 @@ def chat():
             'context': best_context
         }
 
-        result = qa(input_text)
-        print(result['answer'])
-        print(best_context)
         response = {
-            "response": best_context if result else "Désolé, je ne peux pas répondre à cette question pour le moment.",
+            "response": best_context if best_context else "Désolé, je ne peux pas répondre à cette question pour le moment.",
         }
 
         return jsonify(response)
     
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/pouce', methods=['POST'])
+@limiter.limit("10 per minute")
+def pouce():
+    try:
+        json_data = request.get_json()
+        if not json_data:
+            raise BadRequest('Invalid input')
+        
+        user_input = json_data.get("pouce")
+        message = user_input.get('message')
+        reponse = user_input.get('reponse')
+        
+        if not message or not reponse:
+            return jsonify({"error": "Invalid input"}), 400
+
+        pouce_collection.insert_one({
+            "message": message,
+            "reponse": reponse
+        })
+
+        response = {
+            "response": "pouce reçu",
+        }
+        return jsonify(response)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/suggestion', methods=['POST'])
+@limiter.limit("10 per minute")
+def suggestion():
+    try:
+        json_data = request.get_json()
+        if not json_data:
+            raise BadRequest('Invalid input')
+        
+        suggestion_text = json_data.get("suggestion")
+        if not suggestion_text:
+            return jsonify({"error": "Invalid input"}), 400
+
+        suggestion_collection.insert_one({
+            "suggestion": suggestion_text
+        })
+
+        response = {
+            "response": "suggestion reçue",
+        }
+        return jsonify(response)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
