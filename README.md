@@ -12,7 +12,7 @@ Scripts inclus dans le dossier **Create_context**:
    - Ce script récupère une page Wikipedia spécifiée par l'URL qu'on fournit, extrait les titres de section, les sous-titres et le contenu des paragraphes, puis sauvegarde les données dans un fichier JSON structuré.
    - Utilise les modules `requests`, `BeautifulSoup` et `re` pour le web scraping et le nettoyage des données.
 
-2. *uefa1-fr.py* - *uefa2.py* - *worldcup.py* - *worldcup22.py`** :
+2. *uefa1-fr.py* - *uefa2.py* - *worldcup.py* - *worldcup22.py* :
    - Ces script prennent en entrée un fichier JSON contenant des données en français sur les matches de football de l'Euro de 1960 à 2016 (*uefa1-fr.py*), de l'Euro 2020 (*uefa2.py*), de la coupe du monde de 1930 à 2018 (*worldcup.py*), de la coupe du monde 2022 (*worldcup22.py*) et génère un nouveau fichier JSON où chaque match est représenté par une seule clé `"contexte"` contenant un résumé du match.
    - Les données sont nettoyées en utilisant la fonction `clean_string()`, et des informations supplémentaires comme le vainqueur du match sont ajoutées à chaque résumé.
 
